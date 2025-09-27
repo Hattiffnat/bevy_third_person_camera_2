@@ -9,3 +9,9 @@ This is a simple and flexible plugin for adding a third-person camera to Bevy.
 2. Event-based controls ([all_events](./src/events.rs))
 
 ## [Example](./examples/follow_cube.rs)
+
+# Installation
+
+```sh
+cargo add third_person_camera_2
+```
