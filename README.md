@@ -13,5 +13,5 @@ This is a simple and flexible plugin for adding a third-person camera to Bevy.
 # Installation
 
 ```sh
-cargo add third_person_camera_2
+cargo add bevy_third_person_camera_2
 ```
