@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-/// The position of the camera relative to the target point
+/// Position of the camera relative to the target point.
 #[derive(Component)]
 pub struct CameraOffset(pub Vec3);
 
@@ -11,7 +11,7 @@ pub struct CameraOffset(pub Vec3);
 pub struct TargetOffset(pub Vec3);
 
 #[derive(Component)]
-#[relationship(relationship_target = ThirdPersonCamTarget)]
+#[relationship(relationship_target = ThirdPersonCameraTarget)]
 pub struct ThirdPersonCamera {
     #[relationship]
     pub target: Entity,
@@ -25,4 +25,4 @@ impl ThirdPersonCamera {
 
 #[derive(Component)]
 #[relationship_target(relationship = ThirdPersonCamera)]
-pub struct ThirdPersonCamTarget(Vec<Entity>);
+pub struct ThirdPersonCameraTarget(Vec<Entity>);

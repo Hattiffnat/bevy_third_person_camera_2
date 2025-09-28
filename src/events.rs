@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 /// Assign the camera to be controlled locally
 #[derive(Debug, Event)]
-pub struct SetLocalCam(pub Entity);
+pub struct SetLocalCamera(pub Entity);
 
 /// Rotate camera around target
 #[derive(Debug, Event)]

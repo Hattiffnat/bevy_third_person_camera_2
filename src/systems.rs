@@ -4,9 +4,8 @@ use bevy::{
 };
 
 use crate::{
-    CameraOffset, Roll, TargetOffset,
-    components::{ThirdPersonCamTarget, ThirdPersonCamera},
-    events::{RotateAroundTarget, SetLocalCam, Zoom},
+    components::{CameraOffset, TargetOffset, ThirdPersonCamera, ThirdPersonCameraTarget},
+    events::{Roll, RotateAroundTarget, SetLocalCamera, Zoom},
     plugin_settings::ThirdPersonCameraSettings,
 };
 
@@ -57,16 +56,27 @@ pub fn roll_camera_s(
 }
 
 pub fn translate_camera_s(
-    target_transform_q: Query<&Transform, (With<ThirdPersonCamTarget>, Without<ThirdPersonCamera>)>,
+    target_transform_q: Query<
+        &Transform,
+        (With<ThirdPersonCameraTarget>, Without<ThirdPersonCamera>),
+    >,
     mut camera_transform_q: Query<
-        (&mut Transform, &ThirdPersonCamera, &CameraOffset, &TargetOffset),
-        Without<ThirdPersonCamTarget>,
+        (
+            &mut Transform,
+            &ThirdPersonCamera,
+            &CameraOffset,
+            &TargetOffset,
+        ),
+        Without<ThirdPersonCameraTarget>,
     >,
 ) {
     camera_transform_q.par_iter_mut().for_each(
         |(mut camera_transform, third_person_camera, cam_offset, target_offset)| {
             let Ok(target_transform) = target_transform_q.get(third_person_camera.target) else {
-                error!("{} query failed {:?}", third_person_camera.target, target_transform_q);
+                error!(
+                    "{} query failed {:?}",
+                    third_person_camera.target, target_transform_q
+                );
                 return;
             };
 
@@ -81,7 +91,10 @@ pub fn zoom_s(mut zoom_er: EventReader<Zoom>, mut third_person_camera_q: Query<&
         if let Ok(mut cam_offset) = third_person_camera_q.get_mut(zoom_event.camera) {
             cam_offset.0.z += zoom_event.value
         } else {
-            error!("{} query failed {:?}", zoom_event.camera, third_person_camera_q);
+            error!(
+                "{} query failed {:?}",
+                zoom_event.camera, third_person_camera_q
+            );
         }
     }
 }
@@ -140,7 +153,10 @@ pub fn keyboard_rotation_control_s(
             roll -= camera_settings.cam_speed * time.delta_secs()
         }
         if roll != 0.0 {
-            roll_ew.write(Roll { camera, value: roll });
+            roll_ew.write(Roll {
+                camera,
+                value: roll,
+            });
         }
     };
 }
@@ -159,7 +175,7 @@ pub fn scroll_zoom_s(
 }
 
 pub fn set_local_cam(
-    mut set_local_cam_er: EventReader<SetLocalCam>,
+    mut set_local_cam_er: EventReader<SetLocalCamera>,
     mut camera_settings: ResMut<ThirdPersonCameraSettings>,
 ) {
     for set_local_cam_event in set_local_cam_er.read() {
@@ -169,7 +185,7 @@ pub fn set_local_cam(
 
 pub fn target_trasf_gizmo(
     mut gizmos: Gizmos,
-    character_global_t_q: Query<(&GlobalTransform, &ThirdPersonCamTarget)>,
+    character_global_t_q: Query<(&GlobalTransform, &ThirdPersonCameraTarget)>,
     target_offset_q: Query<&TargetOffset>,
 ) {
     for (character_global_t, third_person_cam_target) in character_global_t_q.iter() {

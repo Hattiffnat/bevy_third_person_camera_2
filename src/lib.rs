@@ -32,10 +32,10 @@ impl Default for ThirdPersonCameraPlugin {
 impl Plugin for ThirdPersonCameraPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(self.settings.clone())
+            .add_event::<events::SetLocalCamera>()
             .add_event::<events::RotateAroundTarget>()
             .add_event::<events::Roll>()
             .add_event::<events::Zoom>()
-            .add_event::<events::SetLocalCam>()
             .add_systems(PreUpdate, spawn_offset_s)
             .add_systems(
                 Update,
@@ -48,7 +48,11 @@ impl Plugin for ThirdPersonCameraPlugin {
             )
             .add_systems(
                 Update,
-                (mouse_rotation_control_s, keyboard_rotation_control_s, scroll_zoom_s),
+                (
+                    mouse_rotation_control_s,
+                    keyboard_rotation_control_s,
+                    scroll_zoom_s,
+                ),
             );
 
         if cfg!(debug_assertions) {
