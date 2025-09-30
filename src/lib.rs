@@ -44,6 +44,7 @@ impl Plugin for ThirdPersonCameraPlugin {
                     zoom_s,
                     roll_camera_s,
                     set_local_cam,
+                    draw_relation_gizmo_s,
                 ),
             )
             .add_systems(
