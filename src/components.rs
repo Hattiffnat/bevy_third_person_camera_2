@@ -18,7 +18,14 @@ pub struct ThirdPersonCamera {
 }
 
 impl ThirdPersonCamera {
+    #[deprecated(
+        since = "0.1.2",
+        note = "the method name is not informative, use \"aimed_at(target)\""
+    )]
     pub fn new(target: Entity) -> Self {
+        Self { target }
+    }
+    pub fn aimed_at(target: Entity) -> Self {
         Self { target }
     }
 }
