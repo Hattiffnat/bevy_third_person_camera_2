@@ -53,7 +53,7 @@ fn spawn_cube_and_camera_s(
             Camera3d::default(),
             Transform::default(),
             // Targeting to cube
-            tp_cam::ThirdPersonCamera::new(cube),
+            tp_cam::ThirdPersonCamera::aimed_at(cube),
         ))
         .id();
 
