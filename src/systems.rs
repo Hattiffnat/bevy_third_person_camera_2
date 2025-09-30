@@ -183,17 +183,30 @@ pub fn set_local_cam(
     }
 }
 
-pub fn target_trasf_gizmo(
+pub fn draw_relation_gizmo_s(
     mut gizmos: Gizmos,
-    character_global_t_q: Query<(&GlobalTransform, &ThirdPersonCameraTarget)>,
-    target_offset_q: Query<&TargetOffset>,
+    third_person_cam_settings: Res<ThirdPersonCameraSettings>,
+    target_global_transf_q: Query<
+        (&GlobalTransform, &ThirdPersonCameraTarget),
+        Without<ThirdPersonCamera>,
+    >,
+    camera_global_transf_q: Query<(&GlobalTransform, &TargetOffset), With<ThirdPersonCamera>>,
 ) {
-    for (character_global_t, third_person_cam_target) in character_global_t_q.iter() {
-        let mut transf = character_global_t.compute_transform();
+    if !third_person_cam_settings.show_relation_gizmo {
+        return;
+    }
+
+    for (target_global_transf, third_person_cam_target) in target_global_transf_q.iter() {
+        let target_transf = target_global_transf.compute_transform();
         for camera_entity in third_person_cam_target.iter() {
-            if let Ok(target_offset) = target_offset_q.get(camera_entity) {
-                transf.translation += target_offset.0;
-                gizmos.axes(transf, 2.0);
+            if let Ok((camera_global_transf, target_offset)) =
+                camera_global_transf_q.get(camera_entity)
+            {
+                gizmos.line(
+                    target_transf.translation + target_offset.0,
+                    camera_global_transf.compute_transform().translation,
+                    WHITE,
+                );
             }
         }
     }

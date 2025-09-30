@@ -55,9 +55,5 @@ impl Plugin for ThirdPersonCameraPlugin {
                     scroll_zoom_s,
                 ),
             );
-
-        if cfg!(debug_assertions) {
-            app.add_systems(Update, target_trasf_gizmo);
-        }
     }
 }
