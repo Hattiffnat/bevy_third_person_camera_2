@@ -1,4 +1,5 @@
 use bevy::{
+    color::palettes::css::WHITE,
     input::mouse::{AccumulatedMouseMotion, AccumulatedMouseScroll},
     prelude::*,
 };

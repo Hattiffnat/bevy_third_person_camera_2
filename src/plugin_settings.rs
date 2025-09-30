@@ -15,6 +15,10 @@ pub struct ThirdPersonCameraSettings {
     pub pitch_max: f32,
     pub pitch_min: f32,
 
+    /// Draw line between target and cameras
+    pub show_relation_gizmo: bool,
+
+    /// Camera that controlled
     pub local_cam: Option<Entity>,
 
     pub cam_speed: f32,
@@ -40,6 +44,8 @@ impl Default for ThirdPersonCameraSettings {
 
             pitch_max: 89f32.to_radians(),
             pitch_min: -89f32.to_radians(),
+
+            show_relation_gizmo: false,
 
             local_cam: None,
 
