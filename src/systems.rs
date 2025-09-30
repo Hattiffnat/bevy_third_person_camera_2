@@ -13,13 +13,19 @@ use crate::{
 pub fn spawn_offset_s(
     mut commands: Commands,
     tp_cam_settings: Res<ThirdPersonCameraSettings>,
-    tp_cam_q: Query<Entity, (Added<ThirdPersonCamera>, Without<CameraOffset>)>,
+    tp_cam_q: Query<(Entity, Has<CameraOffset>, Has<TargetOffset>), Added<ThirdPersonCamera>>,
 ) {
-    for tp_cam_entity in tp_cam_q {
-        commands.entity(tp_cam_entity).insert((
-            CameraOffset(tp_cam_settings.default_camera_offset),
-            TargetOffset(tp_cam_settings.default_target_offset),
-        ));
+    for (tp_cam_entity, has_cam_offset, has_target_offset) in tp_cam_q {
+        if !has_cam_offset {
+            commands
+                .entity(tp_cam_entity)
+                .insert(CameraOffset(tp_cam_settings.default_camera_offset));
+        }
+        if !has_target_offset {
+            commands
+                .entity(tp_cam_entity)
+                .insert(TargetOffset(tp_cam_settings.default_target_offset));
+        }
     }
 }
 
