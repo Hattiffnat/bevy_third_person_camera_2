@@ -1,13 +1,13 @@
 use bevy::prelude::*;
 
 use crate::systems::*;
-pub use plugin_settings::ThirdPersonCameraSettings;
-
 pub use components::*;
 pub use events::*;
+pub use plugin_settings::ThirdPersonCameraSettings;
 
 mod components;
 mod events;
+mod observers;
 mod plugin_settings;
 mod systems;
 
@@ -32,20 +32,15 @@ impl Default for ThirdPersonCameraPlugin {
 impl Plugin for ThirdPersonCameraPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(self.settings.clone())
-            .add_event::<events::SetLocalCamera>()
-            .add_event::<events::RotateAroundTarget>()
-            .add_event::<events::Roll>()
-            .add_event::<events::Zoom>()
+            .add_observer(observers::rotate_camera_o)
+            .add_observer(observers::adjust_translation_o)
+            .add_observer(observers::set_local_cam_s)
+            .add_observer(observers::roll_camera_s)
+            .add_observer(observers::zoom_s)
             .add_systems(PreUpdate, spawn_offset_s)
             .add_systems(
                 Update,
-                (
-                    (rotate_camera_s, translate_camera_s).chain(),
-                    zoom_s,
-                    roll_camera_s,
-                    set_local_cam,
-                    draw_relation_gizmo_s,
-                ),
+                (adjust_translation_after_target_s, draw_relation_gizmo_s),
             )
             .add_systems(
                 Update,

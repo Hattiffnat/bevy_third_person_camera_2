@@ -11,4 +11,4 @@ repository = "https://github.com/Hattiffnat/bevy_third_person_camera_2"
 readme = "README.md"
 
 [dependencies]
-bevy = "0.16"
+bevy = "0.17"

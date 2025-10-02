@@ -59,7 +59,7 @@ fn spawn_cube_and_camera_s(
 
     // There can be multiple cameras in a scene, so we explicitly assign
     // this one to be controlled by the keyboard and mouse.
-    commands.send_event(tp_cam::SetLocalCamera(camera));
+    commands.trigger(tp_cam::SetLocalCamera(camera));
     // Alternatively, you can fine-tune your controls using the events provided by this plugin.
 }
 
