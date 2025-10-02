@@ -1,0 +1,127 @@
+use bevy::{
+    color::palettes::tailwind::{BLUE_500, GREEN_500},
+    prelude::*,
+};
+use bevy_third_person_camera_2::{self as tp_cam, SetLocalCamera, ThirdPersonCameraSettings};
+
+#[derive(Component)]
+struct MyCube;
+
+#[derive(Default, Resource)]
+struct MyCameras {
+    pub cameras: Vec<Entity>,
+    pub index: usize,
+}
+
+fn main() {
+    let mut app = App::new();
+
+    app.add_plugins(DefaultPlugins)
+        .init_resource::<MyCameras>()
+        .add_plugins(tp_cam::ThirdPersonCameraPlugin::new(
+            ThirdPersonCameraSettings {
+                show_relation_gizmo: true,
+                ..default()
+            },
+        ))
+        .add_systems(Startup, spawn_cube_and_camera_s)
+        .add_systems(Update, (move_cube_s, swap_camera_s));
+
+    app.run();
+}
+
+fn spawn_cube_and_camera_s(
+    mut commands: Commands,
+    mut my_cameras: ResMut<MyCameras>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+) {
+    commands.insert_resource(AmbientLight {
+        color: Color::default(),
+        brightness: 1000.0,
+        ..default()
+    });
+
+    commands.spawn((
+        Name::new("Floor"),
+        Mesh3d(meshes.add(Mesh::from(Plane3d::new(Vec3::Z, Vec2::new(10.0, 10.0))))),
+        MeshMaterial3d(materials.add(Color::Srgba(GREEN_500))),
+        Transform::default().looking_to(Dir3::NEG_Y, Dir3::Y),
+    ));
+
+    // Spawn some cube
+    let cube = commands
+        .spawn((
+            Name::new("My cube"),
+            MyCube,
+            Transform::from_xyz(0.0, 3.0, 0.0),
+            Mesh3d(meshes.add(Mesh::from(Cuboid::from_length(2.0)))),
+            MeshMaterial3d(materials.add(Color::Srgba(BLUE_500))),
+        ))
+        .id();
+
+    let camera_1 = commands
+        .spawn((
+            Name::new("MyCamera 1"),
+            Camera {
+                order: 0,
+                ..default()
+            },
+            Camera3d::default(),
+            Transform::default(),
+            // Targeting to cube
+            tp_cam::ThirdPersonCamera::aimed_at(cube),
+        ))
+        .id();
+
+    let camera_2 = commands
+        .spawn((
+            Name::new("MyCamera 2"),
+            Camera {
+                order: 1,
+                ..default()
+            },
+            Camera3d::default(),
+            Transform::default(),
+            // Targeting to cube
+            tp_cam::ThirdPersonCamera::aimed_at(cube),
+        ))
+        .id();
+    commands.trigger(tp_cam::SetLocalCamera(camera_1));
+
+    my_cameras.cameras.push(camera_1);
+    my_cameras.cameras.push(camera_2);
+}
+
+fn swap_camera_s(
+    mut commands: Commands,
+    mut my_cameras: ResMut<MyCameras>,
+    keys: Res<ButtonInput<KeyCode>>,
+) {
+    if keys.just_pressed(KeyCode::KeyC) {
+        if my_cameras.cameras.len() - 1 > my_cameras.index {
+            my_cameras.index += 1;
+        } else {
+            my_cameras.index = 0
+        }
+        commands.trigger(SetLocalCamera(my_cameras.cameras[my_cameras.index]));
+    }
+}
+
+/// Move the cube to demonstrate the camera's tracking
+fn move_cube_s(keys: Res<ButtonInput<KeyCode>>, cube_q: Query<&mut Transform, With<MyCube>>) {
+    for mut cube_transform in cube_q {
+        if keys.pressed(KeyCode::KeyW) {
+            cube_transform.translation.x += 0.1;
+        }
+        if keys.pressed(KeyCode::KeyS) {
+            cube_transform.translation.x -= 0.1;
+        }
+        if keys.pressed(KeyCode::KeyA) {
+            cube_transform.translation.z -= 0.1;
+        }
+        if keys.pressed(KeyCode::KeyD) {
+            cube_transform.translation.z += 0.1;
+        }
+    }
+}
