@@ -91,8 +91,6 @@ fn spawn_cube_and_camera_s(
             tp_cam::ThirdPersonCamera::aimed_at(cube),
         ))
         .id();
-    // commands.spawn(UiTargetCamera(camera_1));
-    // commands.spawn(UiTargetCamera(camera_2));
 
     commands.trigger(tp_cam::SetLocalCamera(camera_1));
 
@@ -106,18 +104,14 @@ fn set_viewports_s(
     my_cameras: Res<MyCameras>,
     mut cameras_q: Query<&mut Camera>,
 ) {
-    // We need to dynamically resize the camera's viewports whenever the window size changes
-    // so then each camera always takes up half the screen.
-    // A resize_event is sent when the window is first created, allowing us to reuse this system for initial setup.
     for window_resized in window_resized_reader.read() {
         let window = windows.get(window_resized.window).unwrap();
         let x_size = window.physical_size().x / 2;
 
         for (pos, camera_entity) in my_cameras.cameras.iter().enumerate() {
-            println!("{}", camera_entity);
             if let Ok(mut camera) = cameras_q.get_mut(*camera_entity) {
                 camera.viewport = Some(Viewport {
-                    physical_position: UVec2::new(pos as u32, 1),
+                    physical_position: UVec2::new(pos as u32 * x_size, 0),
                     physical_size: window.physical_size().with_x(x_size),
                     ..default()
                 });
@@ -126,6 +120,7 @@ fn set_viewports_s(
     }
 }
 
+/// Swap controls to another camera
 fn swap_camera_s(
     mut commands: Commands,
     mut my_cameras: ResMut<MyCameras>,
