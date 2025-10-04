@@ -11,6 +11,12 @@ pub struct CameraOffset(pub Vec3);
 pub struct TargetOffset(pub Vec3);
 
 #[derive(Component)]
+pub struct TargetPoint(pub Vec3);
+
+#[derive(Component)]
+pub struct DampingFactor(pub f32);
+
+#[derive(Component)]
 #[relationship(relationship_target = ThirdPersonCameraTarget)]
 pub struct ThirdPersonCamera {
     #[relationship]

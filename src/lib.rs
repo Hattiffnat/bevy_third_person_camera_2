@@ -37,10 +37,14 @@ impl Plugin for ThirdPersonCameraPlugin {
             .add_observer(observers::set_local_cam_s)
             .add_observer(observers::roll_camera_s)
             .add_observer(observers::zoom_s)
-            .add_systems(PreUpdate, spawn_offset_s)
+            .add_systems(PreUpdate, spawn_components_s)
             .add_systems(
                 Update,
-                (adjust_translation_after_target_s, draw_relation_gizmo_s),
+                (
+                    calculate_target_point_s,
+                    adjust_translation_after_target_s,
+                    draw_relation_gizmo_s,
+                ),
             )
             .add_systems(
                 Update,

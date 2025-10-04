@@ -6,19 +6,25 @@ use bevy::{
 
 use crate::{components, events, plugin_settings::ThirdPersonCameraSettings};
 
-pub fn spawn_offset_s(
+pub fn spawn_components_s(
     mut commands: Commands,
     tp_cam_settings: Res<ThirdPersonCameraSettings>,
     tp_cam_q: Query<
         (
             Entity,
+            &components::ThirdPersonCamera,
             Has<components::CameraOffset>,
             Has<components::TargetOffset>,
+            Has<components::TargetPoint>,
+            Has<components::DampingFactor>,
         ),
         Added<components::ThirdPersonCamera>,
     >,
+    target_transform_q: Query<&Transform, With<components::ThirdPersonCameraTarget>>,
 ) {
-    for (tp_cam_entity, has_cam_offset, has_target_offset) in tp_cam_q {
+    for (tp_cam_entity, tp_cam, has_cam_offset, has_target_offset, has_target_point, has_damping) in
+        tp_cam_q
+    {
         if !has_cam_offset {
             commands
                 .entity(tp_cam_entity)
@@ -32,6 +38,57 @@ pub fn spawn_offset_s(
                 .insert(components::TargetOffset(
                     tp_cam_settings.default_target_offset,
                 ));
+        }
+        if !has_target_point {
+            if let Ok(target_transform) = target_transform_q.get(tp_cam.target) {
+                commands
+                    .entity(tp_cam_entity)
+                    .insert(components::TargetPoint(
+                        target_transform.translation + tp_cam_settings.default_target_offset,
+                    ));
+            } else {
+                error!("{} query failed {:?}", tp_cam.target, target_transform_q);
+            }
+        }
+        tp_cam_settings.default_damping.inspect(|damping_factor| {
+            if !has_damping {
+                commands
+                    .entity(tp_cam_entity)
+                    .insert(components::DampingFactor(*damping_factor));
+            }
+        });
+    }
+}
+
+pub fn calculate_target_point_s(
+    time: Res<Time>,
+    target_transform_q: Query<
+        (&Transform, &components::ThirdPersonCameraTarget),
+        With<components::ThirdPersonCameraTarget>,
+    >,
+    mut camera_transform_q: Query<
+        (
+            &components::TargetOffset,
+            &mut components::TargetPoint,
+            Option<&components::DampingFactor>,
+        ),
+        Without<components::ThirdPersonCameraTarget>,
+    >,
+) {
+    for (target_transform, target) in target_transform_q {
+        for camera_entity in target.iter() {
+            if let Ok((target_offset, mut target_point, dumping_op)) =
+                camera_transform_q.get_mut(camera_entity)
+            {
+                let absolute = target_transform.translation + target_offset.0;
+                if let Some(dumping_factor) = dumping_op {
+                    target_point.0 = target_point
+                        .0
+                        .lerp(absolute, time.delta_secs() * dumping_factor.0);
+                } else {
+                    target_point.0 = absolute
+                }
+            }
         }
     }
 }

@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{ThirdPersonCamera, ThirdPersonCameraSettings, components, events};
+use crate::{ThirdPersonCameraSettings, components, events};
 
 pub fn rotate_camera_o(
     rotate_ev: On<events::RotateAroundTarget>,
@@ -27,30 +27,19 @@ pub fn rotate_camera_o(
 
 pub fn adjust_translation_o(
     adjust_translation_ev: On<events::AdjustTranslation>,
-    target_transform_q: Query<&Transform, With<components::ThirdPersonCameraTarget>>,
     mut camera_transform_q: Query<
         (
             &mut Transform,
-            &ThirdPersonCamera,
             &components::CameraOffset,
-            &components::TargetOffset,
+            &components::TargetPoint,
         ),
         Without<components::ThirdPersonCameraTarget>,
     >,
 ) {
-    if let Ok((mut camera_transform, third_person_camera, camera_offset, target_offset)) =
+    if let Ok((mut camera_transform, camera_offset, target_point)) =
         camera_transform_q.get_mut(adjust_translation_ev.camera)
     {
-        if let Ok(target_transform) = target_transform_q.get(third_person_camera.target) {
-            let target_point = target_transform.translation + target_offset.0;
-            camera_transform.translation =
-                target_point - camera_transform.rotation * camera_offset.0;
-        } else {
-            error!(
-                "{} query failed {:?}",
-                third_person_camera.target, target_transform_q
-            );
-        }
+        camera_transform.translation = target_point.0 - camera_transform.rotation * camera_offset.0;
     } else {
         error!(
             "{} query failed {:?}",

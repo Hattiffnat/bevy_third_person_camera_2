@@ -11,7 +11,12 @@ fn main() {
     let mut app = App::new();
 
     app.add_plugins(DefaultPlugins)
-        .add_plugins(tp_cam::ThirdPersonCameraPlugin::default())
+        .add_plugins(tp_cam::ThirdPersonCameraPlugin::new(
+            tp_cam::ThirdPersonCameraSettings {
+                default_damping: Some(10.0),
+                ..default()
+            },
+        ))
         .add_systems(Startup, spawn_cube_and_camera_s)
         .add_systems(Update, move_cube_s);
 

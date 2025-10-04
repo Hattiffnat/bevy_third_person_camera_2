@@ -12,6 +12,9 @@ pub struct ThirdPersonCameraSettings {
     /// Can be changed for a specific camera using the TargetOffset component.
     pub default_target_offset: Vec3,
 
+    /// Smooth target following
+    pub default_damping: Option<f32>,
+
     pub pitch_max: f32,
     pub pitch_min: f32,
 
@@ -41,6 +44,8 @@ impl Default for ThirdPersonCameraSettings {
 
             default_camera_offset: Vec3::ZERO.with_z(-15.0),
             default_target_offset: Vec3::ZERO.with_y(0.0),
+
+            default_damping: None,
 
             pitch_max: 89f32.to_radians(),
             pitch_min: -89f32.to_radians(),
