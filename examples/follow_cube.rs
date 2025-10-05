@@ -68,20 +68,25 @@ fn spawn_cube_and_camera_s(
     // Alternatively, you can fine-tune your controls using the events provided by this plugin.
 }
 
-/// Move the cube to demonstrate the camera's tracking
-fn move_cube_s(keys: Res<ButtonInput<KeyCode>>, cube_q: Query<&mut Transform, With<MyCube>>) {
+/// Move the cube to demonstrate the camera's tracking and damping
+fn move_cube_s(
+    time: Res<Time>,
+    keys: Res<ButtonInput<KeyCode>>,
+    cube_q: Query<&mut Transform, With<MyCube>>,
+) {
+    let value = time.delta_secs() * 10.0;
     for mut cube_transform in cube_q {
         if keys.pressed(KeyCode::KeyW) {
-            cube_transform.translation.x += 0.1;
+            cube_transform.translation.x += value;
         }
         if keys.pressed(KeyCode::KeyS) {
-            cube_transform.translation.x -= 0.1;
+            cube_transform.translation.x -= value;
         }
         if keys.pressed(KeyCode::KeyA) {
-            cube_transform.translation.z -= 0.1;
+            cube_transform.translation.z -= value;
         }
         if keys.pressed(KeyCode::KeyD) {
-            cube_transform.translation.z += 0.1;
+            cube_transform.translation.z += value;
         }
     }
 }
