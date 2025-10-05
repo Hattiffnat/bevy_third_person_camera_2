@@ -81,13 +81,12 @@ pub fn calculate_target_point_s(
                 camera_transform_q.get_mut(camera_entity)
             {
                 let absolute = target_transform.translation + target_offset.0;
-                if let Some(dumping_factor) = dumping_op {
-                    target_point.0 = target_point
+
+                target_point.0 = damping_op.map_or(absolute, |damping_factor| {
+                    target_point
                         .0
-                        .lerp(absolute, time.delta_secs() * dumping_factor.0);
-                } else {
-                    target_point.0 = absolute
-                }
+                        .lerp(absolute, time.delta_secs() * damping_factor.0)
+                })
             }
         }
     }
