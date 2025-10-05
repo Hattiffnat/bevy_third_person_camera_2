@@ -93,6 +93,17 @@ pub fn calculate_target_point_s(
     }
 }
 
+pub fn adjust_translation_after_target_s(
+    mut commands: Commands,
+    target_q: Query<&components::ThirdPersonCameraTarget, Changed<Transform>>,
+) {
+    for third_person_camera in target_q {
+        for camera in third_person_camera.iter() {
+            commands.trigger(events::AdjustTranslation { camera });
+        }
+    }
+}
+
 pub fn mouse_rotation_control_s(
     mut commands: Commands,
     mouse_motion: Res<AccumulatedMouseMotion>,
@@ -154,17 +165,6 @@ pub fn keyboard_rotation_control_s(
             });
         }
     };
-}
-
-pub fn adjust_translation_after_target_s(
-    mut commands: Commands,
-    target_q: Query<&components::ThirdPersonCameraTarget, Changed<Transform>>,
-) {
-    for third_person_camera in target_q {
-        for camera in third_person_camera.iter() {
-            commands.trigger(events::AdjustTranslation { camera });
-        }
-    }
 }
 
 pub fn scroll_zoom_s(
