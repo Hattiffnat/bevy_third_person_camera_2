@@ -6,7 +6,7 @@
 
 This is a simple and flexible plugin for adding a third-person camera to Bevy.
 
-## Bevy version 0.17.2
+## Bevy version 0.17
 
 ## Main features
 
