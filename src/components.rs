@@ -10,11 +10,13 @@ pub struct CameraOffset(pub Vec3);
 #[derive(Component)]
 pub struct TargetOffset(pub Vec3);
 
-#[derive(Component)]
-pub struct TargetPoint(pub Vec3);
-
+/// Delay in camera tracking
 #[derive(Component)]
 pub struct DampingFactor(pub f32);
+
+/// Calculated from target position, TargetOffset and DampingFactor
+#[derive(Component)]
+pub struct TargetPoint(pub Vec3);
 
 #[derive(Component)]
 #[relationship(relationship_target = ThirdPersonCameraTarget)]
