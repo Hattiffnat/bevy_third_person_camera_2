@@ -10,7 +10,7 @@ pub struct CameraOffset(pub Vec3);
 #[derive(Component)]
 pub struct TargetOffset(pub Vec3);
 
-/// Delay in camera tracking
+/// Delays camera tracking if inserted. The lower the value, the greater the delay.
 #[derive(Component)]
 pub struct DampingFactor(pub f32);
 
