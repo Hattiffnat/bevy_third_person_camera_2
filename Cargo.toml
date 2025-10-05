@@ -13,7 +13,7 @@ repository = "https://github.com/Hattiffnat/bevy_third_person_camera_2"
 readme = "README.md"
 
 [dependencies]
-bevy = "0.17.2"
+bevy = "0.17"
 
 [dev-dependencies]
 bevy = { version = "0.17", features = ["dynamic_linking"] }
