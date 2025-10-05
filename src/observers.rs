@@ -33,7 +33,7 @@ pub fn adjust_translation_o(
             &components::CameraOffset,
             &components::TargetPoint,
         ),
-        Without<components::ThirdPersonCameraTarget>,
+        With<components::ThirdPersonCamera>,
     >,
 ) {
     if let Ok((mut camera_transform, camera_offset, target_point)) =
