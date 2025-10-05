@@ -77,7 +77,7 @@ pub fn calculate_target_point_s(
 ) {
     for (target_transform, target) in target_transform_q {
         for camera_entity in target.iter() {
-            if let Ok((target_offset, mut target_point, dumping_op)) =
+            if let Ok((target_offset, mut target_point, damping_op)) =
                 camera_transform_q.get_mut(camera_entity)
             {
                 let absolute = target_transform.translation + target_offset.0;
