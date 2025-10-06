@@ -13,9 +13,14 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    container: rust:slim
 
     steps:
     - uses: actions/checkout@v4
+    - name: Install mold
+      run: |
+          apt-get update
+          apt-get install -y --no-install-recommends mold clang
     - name: Build
       run: cargo build --verbose
     - name: Run tests
