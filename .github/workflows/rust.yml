@@ -27,7 +27,8 @@ jobs:
             libxi-dev \
             libxcursor-dev \
             libxinerama-dev \
-            libgl1-mesa-dev
+            libgl1-mesa-dev \
+            libasound2-dev
       - name: Build
         run: cargo build --verbose
       - name: Run tests
