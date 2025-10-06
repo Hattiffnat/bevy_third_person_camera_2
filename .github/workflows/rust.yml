@@ -12,7 +12,6 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: rust:slim
 
     steps:
       - uses: actions/checkout@v4
