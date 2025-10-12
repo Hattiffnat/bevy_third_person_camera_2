@@ -1,9 +1,12 @@
 use bevy::prelude::*;
 
-use crate::systems::*;
 pub use components::*;
 pub use events::*;
 pub use plugin_settings::ThirdPersonCameraSettings;
+use systems::base::*;
+
+#[cfg(feature = "draw_relation_lines")]
+use systems::gizmo_lines::*;
 
 mod components;
 mod events;
@@ -40,11 +43,7 @@ impl Plugin for ThirdPersonCameraPlugin {
             .add_systems(PreUpdate, spawn_components_s)
             .add_systems(
                 Update,
-                (
-                    calculate_target_point_s,
-                    adjust_translation_after_target_s,
-                    draw_relation_gizmo_s,
-                ),
+                (calculate_target_point_s, adjust_translation_after_target_s),
             )
             .add_systems(
                 Update,
@@ -54,5 +53,8 @@ impl Plugin for ThirdPersonCameraPlugin {
                     scroll_zoom_s,
                 ),
             );
+
+        #[cfg(feature = "draw_relation_lines")]
+        app.add_systems(Update, draw_relation_gizmo);
     }
 }
