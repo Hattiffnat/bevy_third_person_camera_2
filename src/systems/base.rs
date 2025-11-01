@@ -62,7 +62,7 @@ pub fn spawn_components_s(
 pub fn calculate_target_point_s(
     time: Res<Time>,
     target_transform_q: Query<
-        (&Transform, &components::ThirdPersonCameraTarget),
+        (&GlobalTransform, &components::ThirdPersonCameraTarget),
         With<components::ThirdPersonCameraTarget>,
     >,
     mut camera_transform_q: Query<
@@ -79,7 +79,7 @@ pub fn calculate_target_point_s(
             if let Ok((target_offset, mut target_point, damping_op)) =
                 camera_transform_q.get_mut(camera_entity)
             {
-                let absolute = target_transform.translation + target_offset.0;
+                let absolute = target_transform.translation() + target_offset.0;
 
                 target_point.0 = damping_op.map_or(absolute, |damping_factor| {
                     target_point
