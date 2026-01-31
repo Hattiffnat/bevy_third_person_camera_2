@@ -1,7 +1,7 @@
 
 [package]
 name = "bevy_third_person_camera_2"
-version = "0.1.9"
+version = "0.1.10"
 edition = "2024"
 
 authors = ["Hattiffnat <sereyfeam@gmail.com>"]
@@ -16,13 +16,12 @@ readme = "README.md"
 draw_relation_lines = ["bevy/bevy_gizmos"]
 
 [dependencies.bevy]
-version = "0.17"
-
+version = "0.18"
 default-features = false
 features = ["bevy_log", "bevy_window"]
 
 [dev-dependencies.bevy]
-version = "0.17"
+version = "0.18"
 default-features = false
 features = [
     "dynamic_linking",
