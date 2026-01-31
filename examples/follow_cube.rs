@@ -23,7 +23,7 @@ fn spawn_cube_and_camera_s(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    commands.insert_resource(AmbientLight {
+    commands.spawn(AmbientLight {
         color: Color::default(),
         brightness: 1000.0,
         ..default()
