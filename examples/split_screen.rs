@@ -16,9 +16,8 @@ struct MyCameras {
 }
 
 fn main() {
-    let mut app = App::new();
-
-    app.add_plugins(DefaultPlugins)
+    App::new()
+        .add_plugins(DefaultPlugins)
         .init_resource::<MyCameras>()
         .add_plugins(tp_cam::ThirdPersonCameraPlugin::new(
             ThirdPersonCameraSettings {
@@ -27,9 +26,8 @@ fn main() {
             },
         ))
         .add_systems(Startup, spawn_cube_and_camera_s)
-        .add_systems(Update, (move_cube_s, swap_camera_s, set_viewports_s));
-
-    app.run();
+        .add_systems(Update, (move_cube_s, swap_camera_s, set_viewports_s))
+        .run();
 }
 
 fn spawn_cube_and_camera_s(

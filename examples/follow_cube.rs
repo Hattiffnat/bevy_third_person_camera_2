@@ -8,14 +8,12 @@ use bevy_third_person_camera_2 as tp_cam;
 struct MyCube;
 
 fn main() {
-    let mut app = App::new();
-
-    app.add_plugins(DefaultPlugins)
+    App::new()
+        .add_plugins(DefaultPlugins)
         .add_plugins(tp_cam::ThirdPersonCameraPlugin::default())
         .add_systems(Startup, spawn_cube_and_camera_s)
-        .add_systems(Update, move_cube_s);
-
-    app.run();
+        .add_systems(Update, move_cube_s)
+        .run();
 }
 
 fn spawn_cube_and_camera_s(
