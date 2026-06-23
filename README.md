@@ -29,3 +29,4 @@ cargo add bevy_third_person_camera_2 --rename third_person_camera
 | ------ | ---- |
 | 0.1    | 0.17 |
 | 0.2    | 0.18 |
+| 0.3    | 0.19 |
