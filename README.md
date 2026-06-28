@@ -5,7 +5,7 @@
 
 # Description
 
-This is a simple and flexible plugin for adding a third-person camera to Bevy.
+This is a simple and flexible plugin for adding a third-person camera to [Bevy](https://github.com/bevyengine/bevy) engine.
 
 ## Main features
 
