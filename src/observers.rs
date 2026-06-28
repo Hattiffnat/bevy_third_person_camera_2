@@ -48,7 +48,7 @@ pub fn adjust_translation_o(
     }
 }
 
-pub fn zoom_s(
+pub fn zoom_o(
     zoom_ev: On<events::Zoom>,
     mut third_person_camera_q: Query<&mut components::CameraOffset>,
 ) {
@@ -62,7 +62,7 @@ pub fn zoom_s(
     }
 }
 
-pub fn roll_camera_s(
+pub fn roll_camera_o(
     roll_event: On<events::Roll>,
     mut tp_cam_transform: Query<&mut Transform, With<components::ThirdPersonCamera>>,
 ) {
@@ -72,7 +72,7 @@ pub fn roll_camera_s(
     }
 }
 
-pub fn set_local_cam_s(
+pub fn set_local_cam_o(
     set_local_cam_ev: On<events::SetLocalCamera>,
     mut camera_settings: ResMut<ThirdPersonCameraSettings>,
 ) {

@@ -37,9 +37,9 @@ impl Plugin for ThirdPersonCameraPlugin {
         app.insert_resource(self.settings.clone())
             .add_observer(observers::rotate_camera_o)
             .add_observer(observers::adjust_translation_o)
-            .add_observer(observers::set_local_cam_s)
-            .add_observer(observers::roll_camera_s)
-            .add_observer(observers::zoom_s)
+            .add_observer(observers::set_local_cam_o)
+            .add_observer(observers::roll_camera_o)
+            .add_observer(observers::zoom_o)
             .add_systems(PreUpdate, spawn_components_s)
             .add_systems(
                 Update,
