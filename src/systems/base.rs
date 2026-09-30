@@ -107,14 +107,18 @@ pub fn mouse_rotation_control_s(
     mouse_motion: Res<AccumulatedMouseMotion>,
     camera_settings: Res<ThirdPersonCameraSettings>,
 ) {
-    if let Some(camera) = camera_settings.local_cam {
-        if mouse_motion.is_changed() {
-            commands.trigger(events::RotateAroundTarget {
-                camera,
-                delta: mouse_motion.delta * camera_settings.mouse_speed,
-            });
-        }
+    if !mouse_motion.is_changed() {
+        return;
+    }
+
+    let Some(camera) = camera_settings.local_cam else {
+        return;
     };
+
+    commands.trigger(events::RotateAroundTarget {
+        camera,
+        delta: mouse_motion.delta * camera_settings.mouse_speed,
+    });
 }
 
 pub fn keyboard_rotation_control_s(
@@ -123,46 +127,48 @@ pub fn keyboard_rotation_control_s(
     keys: Res<ButtonInput<KeyCode>>,
     camera_settings: Res<ThirdPersonCameraSettings>,
 ) {
-    if let Some(camera) = camera_settings.local_cam {
-        let mut yaw = 0.0;
-        let mut pitch = 0.0;
-
-        if keys.pressed(camera_settings.up) {
-            pitch -= camera_settings.cam_speed * time.delta_secs();
-        }
-        if keys.pressed(camera_settings.down) {
-            pitch += camera_settings.cam_speed * time.delta_secs();
-        }
-        pitch = pitch.clamp(camera_settings.pitch_min, camera_settings.pitch_max);
-
-        if keys.pressed(camera_settings.left) {
-            yaw -= camera_settings.cam_speed * time.delta_secs();
-        }
-        if keys.pressed(camera_settings.right) {
-            yaw += camera_settings.cam_speed * time.delta_secs();
-        }
-        if yaw != 0.0 || pitch != 0.0 {
-            commands.trigger(events::RotateAroundTarget {
-                camera: camera,
-                delta: Vec2::new(yaw, pitch),
-            });
-        }
-
-        let mut roll = 0.0;
-        if keys.pressed(camera_settings.roll_clockwise) {
-            debug!("clockwise");
-            roll += camera_settings.cam_speed * time.delta_secs()
-        } else if keys.pressed(camera_settings.roll_counterclockwise) {
-            debug!("counterclockwise");
-            roll -= camera_settings.cam_speed * time.delta_secs()
-        }
-        if roll != 0.0 {
-            commands.trigger(events::Roll {
-                camera,
-                value: roll,
-            });
-        }
+    let Some(camera) = camera_settings.local_cam else {
+        return;
     };
+
+    let mut yaw = 0.0;
+    let mut pitch = 0.0;
+
+    if keys.pressed(camera_settings.up) {
+        pitch -= time.delta_secs();
+    }
+    if keys.pressed(camera_settings.down) {
+        pitch += time.delta_secs();
+    }
+    pitch = pitch.clamp(camera_settings.pitch_min, camera_settings.pitch_max);
+
+    if keys.pressed(camera_settings.left) {
+        yaw -= time.delta_secs();
+    }
+    if keys.pressed(camera_settings.right) {
+        yaw += time.delta_secs();
+    }
+    if yaw != 0.0 || pitch != 0.0 {
+        commands.trigger(events::RotateAroundTarget {
+            camera: camera,
+            delta: Vec2::new(yaw, pitch),
+        });
+    }
+
+    let mut roll = 0.0;
+    if keys.pressed(camera_settings.roll_clockwise) {
+        debug!("clockwise");
+        roll += time.delta_secs()
+    } else if keys.pressed(camera_settings.roll_counterclockwise) {
+        debug!("counterclockwise");
+        roll -= time.delta_secs()
+    }
+    if roll != 0.0 {
+        commands.trigger(events::Roll {
+            camera,
+            value: roll,
+        });
+    }
 }
 
 pub fn scroll_zoom_s(

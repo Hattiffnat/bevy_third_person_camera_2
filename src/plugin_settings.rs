@@ -39,8 +39,8 @@ pub struct ThirdPersonCameraSettings {
 impl Default for ThirdPersonCameraSettings {
     fn default() -> Self {
         Self {
-            cam_speed: 1.0,
-            mouse_speed: 0.005,
+            cam_speed: 1.,
+            mouse_speed: 0.01,
 
             default_camera_offset: Vec3::ZERO.with_z(-15.0),
             default_target_offset: Vec3::ZERO.with_y(0.0),

@@ -50,10 +50,11 @@ pub fn adjust_translation_o(
 
 pub fn zoom_o(
     zoom_ev: On<events::Zoom>,
+    camera_settings: Res<ThirdPersonCameraSettings>,
     mut third_person_camera_q: Query<&mut components::CameraOffset>,
 ) {
     if let Ok(mut cam_offset) = third_person_camera_q.get_mut(zoom_ev.camera) {
-        cam_offset.0.z += zoom_ev.value
+        cam_offset.0.z += zoom_ev.value * camera_settings.cam_speed
     } else {
         error!(
             "{} query failed {:?}",
@@ -64,11 +65,12 @@ pub fn zoom_o(
 
 pub fn roll_camera_o(
     roll_event: On<events::Roll>,
+    camera_settings: Res<ThirdPersonCameraSettings>,
     mut tp_cam_transform: Query<&mut Transform, With<components::ThirdPersonCamera>>,
 ) {
     if let Ok(mut cam_transform) = tp_cam_transform.get_mut(roll_event.camera) {
         debug!("roll_event: {:?}", roll_event);
-        cam_transform.rotate_local_z(roll_event.value);
+        cam_transform.rotate_local_z(roll_event.value * camera_settings.cam_speed);
     }
 }
 
