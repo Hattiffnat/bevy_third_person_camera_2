@@ -1,7 +1,4 @@
-use bevy::{
-    color::palettes::tailwind::{BLUE_500, GREEN_500},
-    prelude::*,
-};
+use bevy::{color::palettes::css, prelude::*};
 use bevy_third_person_camera_2 as tp_cam;
 
 #[derive(Component)]
@@ -20,31 +17,43 @@ fn spawn_cube_and_camera_s(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
+    mut ambient: ResMut<GlobalAmbientLight>,
 ) {
-    commands.spawn(AmbientLight {
-        color: Color::default(),
-        brightness: 1000.0,
-        ..default()
-    });
+    // background
+    commands.insert_resource(ClearColor(css::SKY_BLUE.into()));
 
+    // light
+    *ambient = GlobalAmbientLight::NONE;
+    commands.spawn((
+        DirectionalLight {
+            color: css::WHITE.into(),
+            illuminance: 1000.,
+            shadow_maps_enabled: true,
+            ..default()
+        },
+        Transform::from_translation(Vec3::ONE).looking_at(Vec3::ZERO, Vec3::Y),
+    ));
+
+    // floor
     commands.spawn((
         Name::new("Floor"),
         Mesh3d(meshes.add(Mesh::from(Plane3d::new(Vec3::Z, Vec2::new(10.0, 10.0))))),
-        MeshMaterial3d(materials.add(Color::Srgba(GREEN_500))),
+        MeshMaterial3d(materials.add(Color::Srgba(css::LIGHT_GREEN))),
         Transform::default().looking_to(Dir3::NEG_Y, Dir3::Y),
     ));
 
-    // Spawn some cube
+    // some cube
     let cube = commands
         .spawn((
             Name::new("My cube"),
             MyCube,
-            Transform::from_xyz(0.0, 3.0, 0.0),
+            Transform::from_xyz(0.0, 1.0, 0.0),
             Mesh3d(meshes.add(Mesh::from(Cuboid::from_length(2.0)))),
-            MeshMaterial3d(materials.add(Color::Srgba(BLUE_500))),
+            MeshMaterial3d(materials.add(Color::Srgba(css::ORANGE_RED))),
         ))
         .id();
 
+    // camera aimed on cube
     let camera = commands
         .spawn((
             Name::new("MyCamera"),
@@ -54,6 +63,12 @@ fn spawn_cube_and_camera_s(
             tp_cam::ThirdPersonCamera::aimed_at(cube),
             // Damping
             tp_cam::DampingFactor(5.0),
+            AmbientLight {
+                color: css::WHITE.into(),
+                brightness: 500.0,
+                affects_lightmapped_meshes: true,
+                ..default()
+            },
         ))
         .id();
 
