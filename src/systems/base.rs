@@ -42,9 +42,11 @@ pub fn spawn_components_s(
             if let Ok(target_transform) = target_transform_q.get(tp_cam.target) {
                 commands
                     .entity(tp_cam_entity)
-                    .insert(components::TargetPoint(
-                        target_transform.translation + tp_cam_settings.default_target_offset,
-                    ));
+                    .insert(components::TargetPoint {
+                        position: target_transform.translation
+                            + tp_cam_settings.default_target_offset,
+                        rotation: Quat::IDENTITY,
+                    });
             } else {
                 error!("{} query failed {:?}", tp_cam.target, target_transform_q);
             }
@@ -65,28 +67,39 @@ pub fn calculate_target_point_s(
         (&GlobalTransform, &components::ThirdPersonCameraTarget),
         With<components::ThirdPersonCameraTarget>,
     >,
-    mut camera_transform_q: Query<
+    mut camera_aim_settings_q: Query<
         (
             &components::TargetOffset,
             &mut components::TargetPoint,
+            &mut Transform,
             Option<&components::DampingFactor>,
         ),
-        Without<components::ThirdPersonCameraTarget>,
+        With<Camera>,
     >,
 ) {
     for (target_transform, target) in target_transform_q {
         for camera_entity in target.iter() {
-            if let Ok((target_offset, mut target_point, damping_op)) =
-                camera_transform_q.get_mut(camera_entity)
-            {
-                let absolute = target_transform.translation() + target_offset.0;
+            let Ok((target_offset, mut target_point, mut camera_transform, damping_op)) =
+                camera_aim_settings_q.get_mut(camera_entity)
+            else {
+                error!("camera transform query failed");
+                continue;
+            };
 
-                target_point.0 = damping_op.map_or(absolute, |damping_factor| {
-                    target_point
-                        .0
-                        .lerp(absolute, time.delta_secs() * damping_factor.0)
-                })
-            }
+            let absolute = target_transform.translation() + target_offset.0;
+            let target_rotation = target_transform.to_scale_rotation_translation().1;
+            let target_up = target_rotation * Vec3::Y;
+            let inherited_rotation = Quat::from_rotation_arc(Vec3::Y, target_up);
+            let rotation_delta = inherited_rotation * target_point.rotation.inverse();
+
+            camera_transform.rotation = rotation_delta * camera_transform.rotation;
+            target_point.rotation = inherited_rotation;
+
+            target_point.position = damping_op.map_or(absolute, |damping_factor| {
+                target_point
+                    .position
+                    .lerp(absolute, time.delta_secs() * damping_factor.0)
+            })
         }
     }
 }

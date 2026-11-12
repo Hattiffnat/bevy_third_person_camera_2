@@ -9,7 +9,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugins(tp_cam::ThirdPersonCameraPlugin::default())
         .add_systems(Startup, spawn_cube_and_camera_s)
-        .add_systems(Update, move_cube_s)
+        .add_systems(Update, (move_cube_s, rotate_cube_s))
         .run();
 }
 
@@ -97,6 +97,35 @@ fn move_cube_s(
         }
         if keys.pressed(KeyCode::KeyD) {
             cube_transform.translation.z += value;
+        }
+    }
+}
+
+// 1/2-5/6 tilt the target's XZ plane; 3/4 rotate around its local Y without changing that plane.
+fn rotate_cube_s(
+    time: Res<Time>,
+    keys: Res<ButtonInput<KeyCode>>,
+    cube_q: Query<&mut Transform, With<MyCube>>,
+) {
+    let value = time.delta_secs() * 2.;
+    for mut cube_transform in cube_q {
+        if keys.pressed(KeyCode::Digit1) {
+            cube_transform.rotate_local_x(value);
+        }
+        if keys.pressed(KeyCode::Digit2) {
+            cube_transform.rotate_local_x(-value);
+        }
+        if keys.pressed(KeyCode::Digit3) {
+            cube_transform.rotate_local_y(value);
+        }
+        if keys.pressed(KeyCode::Digit4) {
+            cube_transform.rotate_local_y(-value);
+        }
+        if keys.pressed(KeyCode::Digit5) {
+            cube_transform.rotate_local_z(value);
+        }
+        if keys.pressed(KeyCode::Digit6) {
+            cube_transform.rotate_local_z(-value);
         }
     }
 }

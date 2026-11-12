@@ -5,21 +5,25 @@ use crate::{ThirdPersonCameraSettings, components, events};
 pub fn rotate_camera_o(
     rotate_ev: On<events::RotateAroundTarget>,
     mut commands: Commands,
-    camera_settings: Res<ThirdPersonCameraSettings>,
-    mut camera_transform_q: Query<&mut Transform, With<components::ThirdPersonCamera>>,
+    tp_cam_settings: Res<ThirdPersonCameraSettings>,
+    mut camera_q: Query<
+        (&mut Transform, &components::TargetPoint),
+        With<components::ThirdPersonCamera>,
+    >,
 ) {
-    let Ok(mut camera_transform) = camera_transform_q.get_mut(rotate_ev.camera) else {
+    let Ok((mut camera_transform, target_point)) = camera_q.get_mut(rotate_ev.camera) else {
         return;
     };
 
-    let (mut yaw, mut pitch, roll) = camera_transform.rotation.to_euler(EulerRot::YXZ);
+    let target_rotation = target_point.rotation;
+    let relative_rotation = target_rotation.inverse() * camera_transform.rotation;
+    let (mut yaw, mut pitch, roll) = relative_rotation.to_euler(EulerRot::YXZ);
 
-    yaw -= camera_settings.cam_speed * rotate_ev.delta.x;
+    yaw -= tp_cam_settings.cam_speed * rotate_ev.delta.x;
+    pitch = (pitch - tp_cam_settings.cam_speed * rotate_ev.delta.y)
+        .clamp(tp_cam_settings.pitch_min, tp_cam_settings.pitch_max);
 
-    pitch = (pitch - camera_settings.cam_speed * rotate_ev.delta.y)
-        .clamp(camera_settings.pitch_min, camera_settings.pitch_max);
-
-    camera_transform.rotation = Quat::from_euler(EulerRot::YXZ, yaw, pitch, roll);
+    camera_transform.rotation = target_rotation * Quat::from_euler(EulerRot::YXZ, yaw, pitch, roll);
     commands.trigger(events::AdjustTranslation {
         camera: rotate_ev.camera,
     });
@@ -39,7 +43,8 @@ pub fn adjust_translation_o(
     if let Ok((mut camera_transform, camera_offset, target_point)) =
         camera_transform_q.get_mut(adjust_translation_ev.camera)
     {
-        camera_transform.translation = target_point.0 - camera_transform.rotation * camera_offset.0;
+        camera_transform.translation =
+            target_point.position - camera_transform.rotation * camera_offset.0;
     } else {
         error!(
             "{} query failed {:?}",

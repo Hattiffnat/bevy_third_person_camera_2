@@ -14,9 +14,12 @@ pub struct TargetOffset(pub Vec3);
 #[derive(Component)]
 pub struct DampingFactor(pub f32);
 
-/// Calculated from target position, TargetOffset and DampingFactor
+/// Cached target point and the target's inherited XZ-plane tilt (excluding local-Y rotation).
 #[derive(Component)]
-pub struct TargetPoint(pub Vec3);
+pub struct TargetPoint {
+    pub position: Vec3,
+    pub rotation: Quat,
+}
 
 #[derive(Component)]
 #[relationship(relationship_target = ThirdPersonCameraTarget)]
