@@ -18,7 +18,7 @@ draw_relation_lines = ["bevy/bevy_gizmos"]
 [dependencies.bevy]
 version = "0.20"
 default-features = false
-features = ["bevy_log", "bevy_window"]
+features = ["bevy_log", "bevy_window", "bevy_camera"]
 
 [dev-dependencies.bevy]
 version = "0.20"
